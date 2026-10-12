@@ -13,5 +13,7 @@ count3 = sum(1 for c in line3_l if c in slog)
 
 if count1 == 5 and count2 == 7 and count3 == 5:
     print("Это японская чушь")
+elif line1 == "" or line2 == "" or line3 == "":
+    print("Мало текста, надо больше")
 else:
     print("Это просто чушь, возможно русская я хз")
