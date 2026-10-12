@@ -15,7 +15,9 @@ int main(){
         real[i] = rand()%65536-32768;
         mnim[i] = rand()%65536-32768;
     }
-    
+    for (int i =0; i <N; i++){
+        printf("%.1f  %.1f \n", real[i], mnim[i]);
+    }
     for (int i=0; i < N; i++) {
         printf("s[%d] = %.1f + j*(%.1f)\n", i, real[i], mnim[i]);
     }
@@ -24,7 +26,7 @@ int main(){
         eng += real[i]*real[i] + mnim[i]*mnim[i];
     }
     printf("Энергия сигнала = %.1f \n", eng);
-    double max_real = real;
+    double max_real = real[0];
     int max_index = 0;
     for (int i=0; i < N; i++) {
         if (real[i] > max_real){
