@@ -1,6 +1,7 @@
 //Вариант 12
 #include<stdio.h>
 #define N 15
+// макс денег и день в который был достигнут
 void max_x(int p[], int *max_price, int *max_index) {
     *max_price = p[0];
     *max_index = 0;
@@ -11,23 +12,89 @@ void max_x(int p[], int *max_price, int *max_index) {
         }
     }
 }
+//мин денег и мин день в который он был достигнут
 void min_x(int p[], int *min_price, int *min_index){
-    *min_price = price[0];
+    *min_price = p[0];
     *min_index = 0;
     for (int i=0; i < N; i++) {
-        if (price[i] < *min_price){
-             *min_price = price[i];
+        if (p[i] < *min_price){
+             *min_price = p[i];
              *min_index = i;
         }
     }    
 }
+//максимальное падение
+void max_drawdown(int p[], int *dd_val, int *dd_start, int *dd_end) {
+    int cur_max = p[0];
+    int cur_max_idx = 0;
+    *dd_val = 0;
+    *dd_start = 0;
+    *dd_end = 0;
+
+    for (int i = 1; i < N; i++) {
+        if (p[i] > cur_max) {
+            cur_max = p[i];
+            cur_max_idx = i;
+        } else {
+            int dd = cur_max - p[i];
+            if (dd > *dd_val) {
+                *dd_val = dd;
+                *dd_start = cur_max_idx;
+                *dd_end = i;
+            }
+        }
+    }
+}
+
+void longest_growth(int p[], int *len, int *start, int *end) {
+    *len = 1;
+    *start = 0;
+    *end = 0;
+
+    int cur_len = 1;
+    int cur_start = 0;
+
+    for (int i = 1; i < N; i++) {
+        if (p[i] >= p[i-1]) {
+            cur_len++;
+        } else {
+            if (cur_len > *len) {
+                *len = cur_len;
+                *start = cur_start;
+                *end = i - 1;
+            }
+            cur_len = 1;
+            cur_start = i;
+        }
+    }
+
+    if (cur_len > *len) {
+        *len = cur_len;
+        *start = cur_start;
+        *end = N - 1;
+    }
+}
+
 int main(){
     int price[N] = {100, 102, 105, 103, 98, 96, 99, 104, 110,
         108, 112, 118, 115, 111, 117};
 
+    int max_price, max_index;
+    int min_price, min_index;
+    int dd_val, dd_start, dd_end;
+    int len, start, end;
 
-    printf("Макс ццена = %d, на %d день. Мин цена = %d, на %d день", 
-        max_price, max_index, min_price, min_index);
+    max_x(price, &max_price, &max_index);
+    min_x(price, &min_price, &min_index);
+    max_drawdown(price, &dd_val, &dd_start, &dd_end);
+    longest_growth(price, &len, &start, &end);
 
+    printf("Макс цена = %d, на %d день. Мин цена = %d, на %d день\n",
+           max_price, max_index + 1, min_price, min_index + 1);
+    printf("Максимальная просадка = %d руб. (начало - день %d, конец - день %d)\n",
+           dd_val, dd_start + 1, dd_end + 1);
+    printf("Самый длинный период роста = %d дней (дни %d - %d)\n",
+           len, start + 1, end + 1);
+        
     return 0;
 }
