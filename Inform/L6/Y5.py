@@ -14,7 +14,11 @@ for i in range(len(depth) - 1):
             price.append(depth[i])
             print(i, ". Индекс", i, ":", depth[i], ">", depth[i-1], depth[i], ">", depth[i+1], "= сокровище")
 print("Сокровища на индексах", ", ".join(map(str, price_indx)), "со значениями", ", ".join(map(str, price)))
-big_price = max(price)
-print("Самое глубокое", big_price)
-depth.remove(big_price)
-print(depth)
+
+if not price:
+    print("Нет сокровищ")
+else:
+    big_price = max(price)
+    print("Самое глубокое", big_price)
+    depth.remove(big_price)
+    print(depth)
