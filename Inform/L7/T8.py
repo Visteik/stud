@@ -1,6 +1,6 @@
 n, m = map(int, input("Введите кол-во рядов n и мест в ряду m через пробел: ").split())
 rows = [list(map(int, input("введите данные о рядах").split())) for _ in range(n)]
-k = int(input())
+k = int(input("Сколько нужно мест "))
 
 for i in range(n):
     count = 0

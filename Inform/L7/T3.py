@@ -49,7 +49,10 @@ if n%2 == 0:
     exit()
 
 base_square = build_matr(n)
-new_square = rand_square(base_square)
+while True:
+    new_square = rand_square(base_square)
+    if magic(new_square):               
+        break  
 for i in new_square:
     print(i)
 magic_const = n * (n * n + 1) / 2

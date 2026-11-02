@@ -4,11 +4,11 @@ students = [
     ("Жанна", 5), ("Зоя", 3)
 ]
 
-f_students = list(filter(lambda x: x >= 4, students))
-sorted_students = sorted(f_students, key=lambda x: (-x, x))
+f_students = list(filter(lambda x: x[1] >= 4, students))
+sorted_students = sorted(f_students, key=lambda x: (-x[1], x[0]))
 
-for name< grade if sorted_students:
+for name, grade in sorted_students:
     print(f"{name} {grade}")
 
-sred = sum(i for i in sorted_students) / len(sorted_students)
-print("Средний бал" sred)
+sred = sum(i[1] for i in sorted_students) / len(sorted_students)
+print("Средний бал", sred)
