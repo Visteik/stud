@@ -1,127 +1,316 @@
-typedef struct {
-    int **grid;         // игровое поле N×N
-    int size;           // размер поля
-    int score;          // текущий счёт
-    int *history;       // массив истории (для "На 5")
-    int history_size;   // кол-во сохранённых ходов
-    int history_cap;    // ёмкость массива истории
-} Game;
+/**
+n - размер поля
+** board - само поле размера n*n
+test_error - проверка на ошибку выделения памяти
+test_board вывод поля
+spawn_title - пустые клетки занимает 2 или 4
 
 
 
 
-Game* game_create(int size){
-// Выделяет память под структуру Game
-// Создаёт поле size × size (calloc — все нули)
-// Инициализирует счёт = 0
-// Для "На 5": инициализирует history = NULL, history_size = 0
-// Вызывает spawn_tile() дважды (начальная расстановка)
-// Возвращает указатель на игру
 
 
+
+
+не сделаны score для запсии счета(уже есть для подсчтеа в слиянии)
+не сделана diretion для запис получаемого символа 
+ */
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+
+int test_error(void* test){
+    if (test == NULL){
+        printf("Ошибка выделения памяти!\n");
+        return(1);
+    }
+    return(0);
+}
+
+void test_board(int** board, int n){
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            printf("%d ", board[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void spawn_title(int** board, int n){
+    int empty_count = 0; //счетчик пустых клеток на поле
+    for (int i = 0; i < n; i++){
+        for (int j =0 ; j < n; j++){
+            if (board[i][j] == 0){
+                empty_count++;
+            }
+        }
+    }
+    if (empty_count == 0){
+        return;
+    }
+    int idx = rand()%empty_count;
+    for (int i = 0; i < n; i++){
+        for (int j =0 ; j < n; j++){
+            if (board[i][j] == 0){
+                if (idx == 0){
+                int roll = rand() % 100;
+                board[i][j] = (roll < 90) ? 2 : 4;
+                return;
+            }
+            idx--;
+            }
+            
+        }
+    }
+}
+
+void shift_row_left(int* row, int n, int* score){
+    //сжатие влево
+    int pos = 0;
+    for (int i = 0; i < n; i++){
+        if (row[i] != 0){
+            row[pos] = row[i];
+            if (i != pos){
+                row[i] = 0;
+            }
+        pos++;
+        }
+        
+    }
+    //слияние одинаковых
+    for(int i = 0; i < n-1; i++){
+        if (row[i] == row[i+1]){
+            row[i] *= 2;
+            row[i+1] = 0;
+            *score += row[i];
+            i++; 
+        }
+    }
+    //снова сжимает
+    pos = 0;
+    for (int i = 0; i < n; i++){
+        if (row[i] != 0){
+            row[pos] = row[i];
+            
+            if (i != pos){
+                row[i] = 0;
+            }
+        pos++;    
+        }
+        
+    }  
+    // Тест
+    // for (int i = 0; i <n; i++){
+    //     printf("%d \n", row[i]);
+    // }  
+}
+
+void reverse_row(int* row, int n){
+    for (int i=0; i < n/2; i++){
+        int t = row[i];
+        row[i] = row[n-1-i];
+        row[n-1-i] = t;
+    }
 
 }
 
-
-void game_free(Game *game)
-// Освобождает поле grid
-// Для "На 5": освобождает history
-// Освобождает саму структуру game
-
-void game_loop(Game *game){
-
-    while (1) {
-    print_board(game);       // вывод поля и счёта
-    char input = get_input(); // чтение хода (w/a/s/d или u для undo)
+void transpose(int** board, int n){
     
-    if (input == 'u') {
-        undo(game);          // только "На 5"
-        continue;
+    for (int i =0; i < n; i++){
+        for (int j = i + 1; j < n; j++){
+            int t = board[i][j];
+            board[i][j] = board[j][i];
+            board[j][i] = t;
+        }
     }
-    
-    save_state(game);        // сохраняем состояние до хода ("На 5")
-    
-    int moved = move(game, input);  // выполняем ход
-    
-    if (moved) {
-        spawn_tile(game);    // добавляем 2 или 4 в случайную клетку
-    }
-    
-    if (is_game_over(game)) {
-        print_board(game);
-        printf("Game Over! Score: %d\n", game->score);
-        break;
-    }
+}
+
+
+
+void shift_left(int** board, int n, int* score){
+    for (int i = 0; i <n; i++){
+        shift_row_left(board[i], n, score);
 }
 }
 
+void process_move(int** board, int n, int* score, char direction){
+    if(direction == 'a'){
+        shift_left(board, n, score);
 
-char get_input()
-// Читает символ с клавиатуры (getchar() или scanf)
-// Возвращает 'w', 'a', 's', 'd', 'u' (undo)
-// Игнорирует невалидный ввод
+    } else if(direction == 'd'){
+        for (int i = 0; i < n; i++) reverse_row(board[i], n);
+        shift_left(board, n, score);
+        for (int i = 0; i < n; i++) reverse_row(board[i], n);
 
-int move(Game *game, char direction)
-// Возвращает 1, если поле изменилось; 0 — если нет
-// В зависимости от направления:
-// 'a' (влево): применяет slide_row() к каждой строке
-// 'd' (вправо): разворачивает строку → slide_row() → разворачивает обратно
-// 'w' (вверх): транспонирует → slide_row() к каждой строке → транспонирует обратно
-// 's' (вниз): транспонирует → разворачивает → slide_row() → разворачивает → транспонирует
+    }else if(direction == 'w'){
+        transpose(board, n);
+        shift_left(board, n, score);
+        transpose(board, n);
 
+    }else if(direction == 's'){
+        transpose(board, n);
+        for (int i = 0; i < n; i++) reverse_row(board[i], n);
+        shift_left(board, n, score);
+        for (int i = 0; i < n; i++) reverse_row(board[i], n);
+        transpose(board, n);
+    }
 
-int slide_row(int row[], int size)
-// Ключевая функция сдвига (используется для всех направлений)
-// Алгоритм:
-// Сдвинуть все ненулевые элементы влево (к началу)
-// Пройти по строке: если row[i] == row[i+1], слить: row[i] *= 2, row[i+1] = 0, добавить к счёту
-// Снова сдвинуть ненулевые влево (после слияния образовались пустоты)
-// Возвращает 1, если строка изменилась
+}
 
-void reverse_row(int row[], int size)
-// Разворачивает строку: меняет row[i] и row[size-1-i]
+int is_game_over(int** board, int n){
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            if (board[i][j] == 0) return 0;
 
-void transpose(Game *game)
-// Транспонирует матрицу: grid[i][j] ↔ grid[j][i]
-// Используется для обработки вертикальных направлений через ту же slide_row()
+        }
 
-void spawn_tile(Game *game)
-// Находит все пустые клетки (значение 0)
-// Если пустых нет — выход
-// Выбирает случайную пустую клетку
-// Ставит туда 2 (с вероятностью 90%) или 4 (с вероятностью 10%)
+    }
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            if (j < n-1 && board[i][j] == board [i][j+1]) return 0;
+            if (i < n-1 && board[i][j] == board [i+1][j]) return 0;
 
-int count_empty(Game *game)
-// Возвращает количество нулевых клеток на поле
+        }
 
-int is_game_over(Game *game)
-// Возвращает 1, если ходов больше нет
-// Условие: нет пустых клеток И нет соседних одинаковых плиток
-// Проверка соседей: для каждой клетки проверяем правого и нижнего соседа
+    }    
+    return 1;
+}
 
-void print_board(Game *game)
-// Очищает экран (system("clear") или printf("\033[2J"))
-// Выводит поле в виде сетки 4×4 (или N×N)
-// Выравнивает числа по ширине (например, %5d)
-// Выводит score: <значение>
+void copy_board(int** board, int** last_board, int n){
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){    
+            last_board[i][j] = board[i][j];
+        }
+    }        
+}
 
-void save_state(Game *game)
-// Сохраняет текущее состояние поля и счёта в историю
-// Копирует grid в динамический массив history через realloc
-// Формат хранения: size*size элементов поля + 1 элемент счёта
-// Увеличивает history_size
-
-
-void undo(Game *game)
-// Если history_size == 0 — вывести "Нечего отменять"
-// Восстанавливает поле и счёт из последнего сохранённого состояния
-// Уменьшает history_size
-// (Опционально: realloc для уменьшения размера массива)
-
+int srav_board(int** board, int** last_board, int n){
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){    
+            if(board[i][j] != last_board[i][j]){
+                return 0;
+            }
+        }
+    }   
+    return 1;
+}
 
 
-int main(int argc, char *argv[])
-// Парсит размер поля из argv[1] (для "На 4" и "На 5")
-// Создаёт игру через game_create()
-// Запускает игровой цикл game_loop()
-// Освобождает память через game_free()
+
+void save_history(int** board, int* score, int n, int** history, int* history_count){
+
+    int one_size = n*n + 1; //Размер одного состояния nn поле + 1 на счет
+    int* new_history = (int*)realloc(*history, (*history_count + 1)*one_size*sizeof(int));
+    if (test_error(new_history)) return;
+    *history = new_history;
+    // проверяем следующий свободный индекс
+    int offset = (*history_count)* one_size;
+    for(int i =0; i <n; i++){
+        for(int j = 0; j < n; j++){
+            (*history)[offset+i*n+j] = board[i][j];
+        }
+    }
+    //записываем счет в последний элемент
+    (*history)[offset+n*n] = *score;
+    (*history_count)++;
+}
+
+void undo_move(int** board, int* score, int n, int** history, int* history_count){
+    if (*history_count == 0){
+        printf("История пустая \n");
+        return;
+    } 
+    (*history_count)--;
+    int one_size = n*n + 1;
+    int offset = (*history_count)* one_size;
+
+    for(int i =0; i <n; i++){
+        for(int j = 0; j < n; j++){
+            board[i][j] = (*history)[offset+i*n+j];
+        }
+    }
+    *score = (*history)[offset+n*n];
+    printf("Ход отменен \n");
+}
+
+
+
+int main(){
+    srand(time(NULL));
+    int n;
+    printf("Введите размера поля: \n");
+    scanf("%d", &n);
+    
+    if (n <= 1){
+        printf("Некорректный размер поля\n");
+        return 1;
+    }
+    int **board = (int**)calloc(n, sizeof(int*));
+    int **last_board = (int**)calloc(n, sizeof(int*));
+    
+    if (test_error(board)) return 1;
+    
+    for (int i = 0; i < n; i++){
+        board[i] = (int*)calloc(n, sizeof(int));
+        last_board[i] = (int*)calloc(n, sizeof(int));
+        if (test_error(board[i]) || test_error(last_board[i])) return 1;
+    }
+    
+    int score = 0;
+
+    int* history = NULL;
+    int history_count = 0;
+
+
+    printf("можно играть w a s d для движения, q - завершить игру. \n");
+    spawn_title(board, n);
+    spawn_title(board, n);
+    while(1){
+        system("clear");
+        test_board(board, n);
+        printf("Счет: %d\n", score);
+
+        
+        if (is_game_over(board, n)){
+            printf("Ты лузер, кек. Счет: %d \n", score);
+            break;
+        }
+
+        char move;
+        scanf(" %c", &move);
+
+        if (move == 'q') break;
+        
+
+
+        if (move == 'r'){
+            undo_move(board, &score, n, &history, &history_count);
+            continue;
+        }
+
+        int old_score = score;
+        copy_board(board, last_board, n);
+
+        process_move(board, n, &score, move);
+
+        if (!srav_board(board, last_board, n)){
+            save_history(last_board, &old_score, n, &history, &history_count);
+            spawn_title(board, n);
+        }else{
+            printf("ход ничего не меняет \n");
+            score = old_score;
+        }
+
+
+    }
+    for (int i = 0; i < n; i++) {
+        free(board[i]);
+        free(last_board[i]);
+    }
+    free(board);
+    free(last_board);
+    free(history);
+
+
+    return 0;
+}
