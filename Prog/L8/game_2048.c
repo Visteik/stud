@@ -233,7 +233,14 @@ void undo_move(int** board, int* score, int n, int** history, int* history_count
     printf("Ход отменен \n");
 }
 
-
+int is_win(int** board, int n){
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            if (board[i][j] >= 2048) return 1;
+        }
+    }
+    return 0;
+}
 
 int main(){
     srand(time(NULL));
@@ -266,6 +273,14 @@ int main(){
     spawn_title(board, n);
     spawn_title(board, n);
     while(1){
+        
+
+        if (is_win(board, n)){
+            printf("\n*** ПОБЕДА! Вы собрали 2048! Счет: %d ***\n", score);
+            break;
+        }        
+        
+
         system("clear");
         test_board(board, n);
         printf("Счет: %d\n", score);
@@ -275,6 +290,7 @@ int main(){
             printf("Ты лузер, кек. Счет: %d \n", score);
             break;
         }
+        
 
         char move;
         scanf(" %c", &move);
