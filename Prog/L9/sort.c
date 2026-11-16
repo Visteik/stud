@@ -1,20 +1,32 @@
 #include <stdio.h>
 //Любой комментарий 2
-int main (){
+
+void sort(int arr[3]){
     
-    for (int i = 0; i < n - 1; i++){
-        for (int j = 0; j < n - 1; j++){
-            if (arr[j] > arr[j+1]){
-                int temp = arr[j];
-                arr[j] = arr[j+1];
-                arr[j+1] = temp;
+        for (int i = 0; i < 2; i++){
+            if (arr[i] > arr[i+1]){
+                int t = arr[i];
+                arr[i] = arr[i+1];
+                arr[i+1] = t;
             }
-
-
-        }
-
-
     }
+        for (int i = 0; i < 2; i++){
+            if (arr[i] > arr[i+1]){
+                int t = arr[i];
+                arr[i] = arr[i+1];
+                arr[i+1] = t;
+            }
+    }    
+}
+
+
+int main (){
+    int a[3] = {4, 6};
+    sort(a);
+    for (int i =0; i < 3; i++){
+        printf("%d ", a[i]);
+    }
+    printf("\n");
 
 
     return 0;
