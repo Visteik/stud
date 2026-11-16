@@ -12,3 +12,8 @@
 ![alt text](image-9.png)
 ![alt text](image-10.png)
 ![alt text](image-11.png)
+оценка 4
+![alt text](image.png)
+git diff --staged пустой
+![alt text](image-1.png)
+после добавления в staged попали данные в git diff --staged
