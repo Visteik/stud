@@ -70,3 +70,15 @@ merge conflict
 
 ![alt text](image-23.png)
 создал mergesort.py и закоммитил
+
+![alt text](image-24.png)
+создал ветку Mergesort-Impl, изменил код в файле мержсорт, закоммитил и вернулся в мастер
+
+![alt text](image-25.png)
+заменил mergesort в мастер и вывел лог
+
+![alt text](image-26.png)
+конфликты после мержа
+
+![alt text](image-27.png)
+взял изменения из второй ветки
