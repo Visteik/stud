@@ -61,3 +61,6 @@ ff-merge
 
 ![alt text](image-21.png)
 статус слияния 
+
+![alt text](image-22.png)
+гит лог после коммита 
