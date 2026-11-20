@@ -64,3 +64,9 @@ ff-merge
 
 ![alt text](image-22.png)
 гит лог после коммита 
+
+merge conflict
+
+
+![alt text](image-23.png)
+создал mergesort.py и закоммитил
