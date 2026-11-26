@@ -1,18 +1,12 @@
 #!/bin/bash
 
 printf "Введите имя скрипта для удаления следов "
+
 read del_name
+del_name="${del_name:-def.sh}"
 
-if [ -z "$del_name" ]; then
-    del_name="def.sh"
-fi
+p="$(ls "$HOME/Desktop/$del_name" "$HOME/$del_name" 2>/dev/null | head -1)"
 
-if [ -f "$HOME/Desktop/$del_name" ]; then
-    rm "$HOME/Desktop/$del_name"
-    echo "Файл $del_name удален с ~/Desktop/"
-elif [  -f "$HOME/$del_name" ]; then
-    rm "$HOME/$del_name"
-    echo "Файл $del_name удален из домашней папки."
-else 
-    echo "Нет такоо скрипта"
-fi
+: "${p:+$(rm -- "$p")}"
+
+echo "Файл $del_name ${p:+удален: $p}${p:-не найден}"

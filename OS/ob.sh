@@ -16,8 +16,4 @@ cd Lab4/
 cat f3
 printf "Введите команду"
 read user_command
-if [ -z "$user_command" ]; then
-    echo " ничего не ввели "
-else
-    eval "$user_command"
-fi
+eval "${user_command:-echo ' ничего не ввели '}"
