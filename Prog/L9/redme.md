@@ -1,22 +1,38 @@
 Оценка 3
+Выводим git status, ничего не показывает т.к. изменений нет
 ![alt text](image.png)
+Выводим git log, выводит историю коммитов
 ![alt text](image-1.png)
+Создаем файл Sort и выводит статус. Показывает что можем его закомитить
 ![alt text](image-2.png)
+
 ![alt text](image-3.png)
+
 ![alt text](image-4.png)
+
 ![alt text](image-5.png)
+
 ![alt text](image-6.png)
+
 оценка 3 ветки
 ![alt text](image-7.png)
+
 ![alt text](image-8.png)
+
 ![alt text](image-9.png)
+
 ![alt text](image-10.png)
+
 ![alt text](image-11.png)
+
 загрузил ветку mybranch в github
+
 ![alt text](image-13.png)
+
 ![alt text](image-12.png)
 оценка 4
 ![alt text](image02.png)
+
 git diff --staged пустой
 ![alt text](ad.png)
 после добавления в staged попали данные в git diff --staged
