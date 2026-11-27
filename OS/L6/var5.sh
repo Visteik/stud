@@ -11,7 +11,7 @@ file_name="$1"
 cat_name="$2"
 counter="$3"
 
-# по человечески через ввод вручную
+# через ввод вручную
 
 # printf "Введите название файла каталог число через пробелы "
 # read file_name cat_name counter
@@ -28,6 +28,11 @@ fi
 
 if [ ! -d "$cat_name" ]; then
     echo "Каталог не существует"
+    exit
+fi
+
+if [ "$counter" -lt 0 ] ; then
+    echo "Число меньше или равно 0"
     exit
 fi
 
